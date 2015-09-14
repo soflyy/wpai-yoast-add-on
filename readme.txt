@@ -1,11 +1,11 @@
-=== Import SEO Settings into WordPress SEO by Yoast ===
+=== Import Settings into WordPress SEO by Yoast ===
 Contributors: soflyy, wpallimport
 Tags: seo, import seo, search engine optimization, import search engine optimization, yoast, import yoast, yoast seo, yoast wordpress seo, import yoast wordpress seo
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.1.0
-Tested up to: 4.2.2
-Stable tag: 1.0.0
+Tested up to: 4.3
+Stable tag: 1.0.1
 
 Easily import SEO settings from any XML or CSV file to Yoast WordPress SEO with the Yoast WordPress SEO Add-On for WP All Import.
 
@@ -42,6 +42,13 @@ However, [the professional edition of WP All Import](http://www.wpallimport.com/
 * Access to premium technical support.
 
 [Upgrade to the professional edition of WP All Import now.](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo)
+
+= Developers: Create Your Own Add-On =
+This Add-On was created using the [Rapid Add-On API](http://www.wpallimport.com/documentation/addon-dev/overview/) for WP All Import. We've made it really easy to write your own Add-On. 
+
+Don't have time? We'll write one for you.
+
+[Read more about getting an Add-On made for your plugin or theme.](http://www.wpallimport.com/add-ons/#developers)
 
 == Installation ==
 
