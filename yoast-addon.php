@@ -168,4 +168,10 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
             }
         }
     }
+    // calculate _yoast_wpseo_linkdex
+    if (class_exists('WPSEO_Metabox'))
+    {
+    	$seo = new WPSEO_Metabox();
+    	$seo->calculate_results( get_post($post_id) );
+    }
 }
