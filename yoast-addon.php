@@ -99,18 +99,21 @@ $yoast_addon->add_options(
 
 $yoast_addon->set_import_function( 'yoast_seo_addon_import' );
 
-if ( !is_plugin_active( "wordpress-seo/wp-seo.php" ) && !is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
+if (function_exists('is_plugin_active')) {
 
-	$yoast_addon->admin_notice(
-		'The Yoast WordPress SEO Add-On requires WP All Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.'
-	);
+	if ( !is_plugin_active( "wordpress-seo/wp-seo.php" ) && !is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
 
-}
+		$yoast_addon->admin_notice(
+			'The Yoast WordPress SEO Add-On requires WP All Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.'
+		);
 
-if ( is_plugin_active( "wordpress-seo/wp-seo.php" ) || is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
-	
-	$yoast_addon->run();
-	
+	}
+
+	if ( is_plugin_active( "wordpress-seo/wp-seo.php" ) || is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
+		
+		$yoast_addon->run();
+		
+	}
 }
 
 function yoast_seo_addon_import( $post_id, $data, $import_options ) {
