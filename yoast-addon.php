@@ -10,6 +10,8 @@ Author: Soflyy
 
 include "rapid-addon.php";
 
+include_once(ABSPATH.'wp-admin/includes/plugin.php');
+
 $yoast_addon = new RapidAddon( 'Yoast WordPress SEO Add-On', 'yoast_addon' );
 
 $yoast_addon->add_field( '_yoast_wpseo_focuskw', 'Focus Keyword', 'text', null, 'Pick the main keyword or keyphrase that this post/page is about.' );
@@ -98,8 +100,6 @@ $yoast_addon->add_options(
 // add twitter settings
 
 $yoast_addon->set_import_function( 'yoast_seo_addon_import' );
-
-include_once(ABSPATH.'wp-admin/includes/plugin.php');
 
 if ( function_exists('is_plugin_active' ) ) {
 
