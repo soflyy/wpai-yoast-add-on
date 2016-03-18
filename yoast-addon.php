@@ -118,7 +118,7 @@ if (function_exists('is_plugin_active')) {
 	}
 }
 
-function yoast_seo_addon_import( $post_id, $data, $import_options ) {
+function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
 
 	global $yoast_addon;
 
@@ -152,7 +152,7 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
     // update everything in fields arrays
     foreach ( $fields as $field ) {
 
-        if ( $yoast_addon->can_update_meta( $field, $import_options ) ) {
+        if ( empty($article['ID']) or $yoast_addon->can_update_meta( $field, $import_options ) ) {
 
             if ( in_array( $field, $image_fields ) ) {
 
