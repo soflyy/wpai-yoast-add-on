@@ -100,11 +100,11 @@ $yoast_addon->add_options(
 		        'Set Primary Category',
 		        'radio', 
 		        array(
+		                '0' => 'No',
 		                '1' => array(
 		                        'Yes',
 		                        $yoast_addon->add_field( '_yoast_wpseo_primary_category', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 		                ),
-		                '0' => 'No',
 		                '2' => array(
 		                		'Set with XPath',
 		                		$yoast_addon->add_field( '_yoast_wpseo_primary_category_xpath_setting', 'XPath', 'text', null, 'Must be set to \'yes\' or \'no\'' ),
