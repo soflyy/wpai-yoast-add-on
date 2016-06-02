@@ -4,7 +4,7 @@
 Plugin Name: WP All Import - Yoast WordPress SEO Add-On
 Plugin URI: http://www.wpallimport.com/
 Description: Import data into Yoast WordPress SEO with WP All Import.
-Version: 1.1.1 beta-1
+Version: 1.1.1
 Author: Soflyy
 */
 
@@ -95,24 +95,7 @@ $yoast_addon->add_options(
 			),
 		$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
 		$yoast_addon->add_field( '_yoast_wpseo_redirect', '301 Redirect', 'text', null, 'The URL that this page should redirect to.' ),
-		$yoast_addon->add_field(
-		        '_yoast_wpseo_primary_category_options',
-		        'Set Primary Category',
-		        'radio', 
-		        array(
-		                '0' => 'No',
-		                '1' => array(
-		                        'Yes',
-		                        $yoast_addon->add_field( '_yoast_wpseo_primary_category', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
-		                ),
-		                '2' => array(
-		                		'Set with XPath',
-		                		$yoast_addon->add_field( '_yoast_wpseo_primary_category_xpath_setting', 'XPath', 'text', null, 'Must be set to \'yes\' or \'no\'' ),
-		                		$yoast_addon->add_field( '_yoast_wpseo_primary_category_xpath_value', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
-		                ),
-		        )
-		)
-		//$yoast_addon->add_field( '_yoast_wpseo_primary_category', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
+		$yoast_addon->add_field( '_yoast_wpseo_primary_category', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 
 	)
 );
@@ -158,15 +141,9 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
     	'_yoast_wpseo_opengraph-description',
     	'_yoast_wpseo_twitter-title',
     	'_yoast_wpseo_twitter-description',
-    	'_yoast_wpseo_primary_category_options',
-    	'_yoast_wpseo_primary_category_xpath_setting',
-    	'_yoast_wpseo_primary_category_xpath_value'
+    	'_yoast_wpseo_primary_category'
 
     );
-
-    if ( $data['_yoast_wpseo_primary_category_options'] != '0' and $data['_yoast_wpseo_primary_category_xpath_setting'] != 'no' and $data['_yoast_wpseo_primary_category_xpath_setting'] == 'yes' or $data['_yoast_wpseo_primary_category_options'] == '1' ) {
-    	$fields[] = '_yoast_wpseo_primary_category';
-    }
     
     // image fields
     $image_fields = array(
@@ -195,7 +172,7 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             } else {
 
-            	if ( $field == '_yoast_wpseo_primary_category' and $data['_yoast_wpseo_primary_category_options'] == '1' ) {
+            	if ( $field == '_yoast_wpseo_primary_category' ) {
 
             		$title = $data[$field];
 
@@ -203,20 +180,15 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             		update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
 
-            		update_post_meta( $post_id, '_yoast_wpseo_primary_category_options', '1' );
+            		if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) ) {
 
+            			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'yes' );
+            		
+            		} else {
 
-            	} else if ( $field == '_yoast_wpseo_primary_category_xpath_value' and $data['_yoast_wpseo_primary_category_options'] == '2' ) {
+            			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'no' );
 
-            		$title = $data[$field];
-
-            		$cat_slug = sanitize_title( $title );
-
-            		update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
-
-            		update_post_meta( $post_id, '_yoast_wpseo_primary_category_options', '2' );
-
-            		update_post_meta( $post_id, '_yoast_wpseo_primary_category_xpath_value', $data['_yoast_wpseo_primary_category_xpath_value'] );
+            		}
 
             	} else {
 
@@ -226,7 +198,6 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
             }
         }
     }
-
     		// calculate _yoast_wpseo_linkdex
     if ( class_exists( 'WPSEO_Metabox' ) ) {
     	
@@ -240,8 +211,8 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
 function yoast_addon_primary_category( $post_id ) {
 
-	if ( get_post_meta( $post_id, '_yoast_wpseo_primary_category_options', true ) == '2' and get_post_meta( $post_id, '_yoast_wpseo_primary_category_xpath_setting', true ) == 'yes' or get_post_meta( $post_id, '_yoast_wpseo_primary_category_options', true ) == '1' ) {
-
+	if ( get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true ) == 'yes' ) {
+		
 		$cat_slug = get_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', true );
 
 		if ( !empty( $cat_slug ) ) {
