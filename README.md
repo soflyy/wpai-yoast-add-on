@@ -17,8 +17,6 @@
 | Facebook Title                 | _yoast_wpseo_opengraph-title                | Text string                                                                   |
 | Facebook Description           | _yoast_wpseo_opengraph                      | Text string                                                                   |
 | Facebook Image                 | _yoast_wpseo_opengraph-image                | URL to image                                                                  |
-| Primary Category Options       | _yoast_wpseo_primary_category_options       | Yes, No, or Set with XPath                                                    |
-| Primary Category XPath Setting | _yoast_wpseo_primary_category_xpath_setting | Text string                                                                   |
-| Primaty Catergory XPath Value  | _yoast_wpseo_primary_category_xpath_value   | Text string                                                                   |
 | Primary Category               | _yoast_wpseo_primary_category               | Primary Category ID                                                           |
 | Primary Category for Products  | _yoast_wpseo_primary_product_cat            | Primary WooCommerce Product Category ID                                       |
+| Primary Category Update Option | _yoast_wpseo_primary_category_can_update    | String 'yes' or 'no'                                                          |
