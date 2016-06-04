@@ -95,7 +95,7 @@ $yoast_addon->add_options(
 			),
 		$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
 		$yoast_addon->add_field( '_yoast_wpseo_redirect', '301 Redirect', 'text', null, 'The URL that this page should redirect to.' ),
-		$yoast_addon->add_field( '_yoast_wpseo_primary_category', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
+		$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 
 	)
 );
@@ -141,7 +141,7 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
     	'_yoast_wpseo_opengraph-description',
     	'_yoast_wpseo_twitter-title',
     	'_yoast_wpseo_twitter-description',
-    	'_yoast_wpseo_primary_category'
+    	'_yoast_wpseo_primary_category_addon'
 
     );
     
@@ -172,7 +172,7 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             } else {
 
-            	if ( $field == '_yoast_wpseo_primary_category' ) {
+            	if ( $field == '_yoast_wpseo_primary_category_addon' ) {
 
             		$title = $data[$field];
 
@@ -180,15 +180,26 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             		update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
 
-            		if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) ) {
+            		update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
+
+            		update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
+
+
+            		/*if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) and $post_type != 'product' ) {
 
             			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'yes' );
             		
+            		} else if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) and $post_type == 'product' ) {
+
+            			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 'yes' );
+
             		} else {
 
             			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'no' );
 
-            		}
+            			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 'no' );
+
+            		}*/
 
             	} else {
 
@@ -211,16 +222,21 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
 function yoast_addon_primary_category( $post_id ) {
 
-	if ( get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true ) == 'yes' ) {
-		
+	$product_update = get_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', true );
+
+	$post_update = get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true );
+
+	if ( $post_update == 1 or $product_update == 1 ) {
+	
 		$cat_slug = get_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', true );
 
 		if ( !empty( $cat_slug ) ) {
+
 			$post_type = get_post_type( $post_id );
 
 			if ( !empty( $cat_slug ) and !empty( $post_type ) ) {
 
-				if ( $post_type == 'product' ) {
+				if ( $post_type == 'product' and $product_update == 1 ) {
 
 		    		$cat = get_term_by( 'slug', $cat_slug, 'product_cat' );
 
@@ -235,14 +251,17 @@ function yoast_addon_primary_category( $post_id ) {
 
 				} else {
 
-					$cat = get_term_by( 'slug', $cat_slug, 'category' );
-				
-					$cat_id = $cat->term_id;
+					if ( $post_update == 1 ) {
 
-					if ( !empty( $cat_id ) ) {
+						$cat = get_term_by( 'slug', $cat_slug, 'category' );
+					
+						$cat_id = $cat->term_id;
 
-						update_post_meta( $post_id, '_yoast_wpseo_primary_category', $cat_id );
+						if ( !empty( $cat_id ) ) {
 
+							update_post_meta( $post_id, '_yoast_wpseo_primary_category', $cat_id );
+
+						}
 					}
 				}
 			}
