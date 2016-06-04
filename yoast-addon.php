@@ -184,23 +184,6 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             		update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
 
-
-            		/*if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) and $post_type != 'product' ) {
-
-            			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'yes' );
-            		
-            		} else if ( $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) and $post_type == 'product' ) {
-
-            			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 'yes' );
-
-            		} else {
-
-            			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 'no' );
-
-            			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 'no' );
-
-            		}*/
-
             	} else {
 
                 	update_post_meta( $post_id, $field, $data[$field] );
