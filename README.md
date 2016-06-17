@@ -5,6 +5,7 @@
 | Name                                    | Custom Field                                | Values                                                                        |
 | ----------------------------------------| --------------------------------------------| ----------------------------------------------------------------------------- |
 | Focus Keyword                           | _yoast_wpseo_focuskw                        | Text string                                                                   |
+| Focus Keyword Text Input                | _yoast_wpseo_focuskw_text_input             | Text string                                                                   |
 | SEO Title                               | _yoast_wpseo_title                          | Text string                                                                   |
 | Meta Description                        | _yoast_wpseo_metadesc                       | Text string                                                                   |
 | Meta Robots Index                       | _yoast_wpseo_meta-robots-noindex            | Blank for default, 1 for noindex, or 2 for index                              |
@@ -19,6 +20,3 @@
 | Facebook Image                          | _yoast_wpseo_opengraph-image                | URL to image                                                                  |
 | Primary Category                        | _yoast_wpseo_primary_category               | Primary Category ID                                                           |
 | Primary Category for Products           | _yoast_wpseo_primary_product_cat            | Primary WooCommerce Product Category ID                                       |
-| Primary Category Add-On Field           | _yoast_wpseo_primary_category_addon         | Name or Slug of Primary Category                                              |
-| Primary Category Update Option          | _yoast_wpseo_primary_category_can_update    | 1 (true) or empty                                                             |
-| Primary Product Category Update Option  | _yoast_wpseo_primary_product_cat_can_update | 1 (true) or empty                                                             |

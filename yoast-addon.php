@@ -4,7 +4,7 @@
 Plugin Name: WP All Import - Yoast WordPress SEO Add-On
 Plugin URI: http://www.wpallimport.com/
 Description: Import data into Yoast WordPress SEO with WP All Import.
-Version: 1.1.1
+Version: 1.1.2
 Author: Soflyy
 */
 
@@ -142,7 +142,6 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
     	'_yoast_wpseo_twitter-title',
     	'_yoast_wpseo_twitter-description',
     	'_yoast_wpseo_primary_category_addon'
-
     );
     
     // image fields
@@ -176,13 +175,20 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
             		$title = $data[$field];
 
-            		$cat_slug = sanitize_title( $title );
+            		$cat_slug = sanitize_title( $title ); // Get the slug for the Primary Category so we can match it later
 
             		update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
+
+            		// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
 
             		update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
 
             		update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
+
+            	} else if ( $field == '_yoast_wpseo_focuskw' ) {
+
+            		update_post_meta( $post_id, $field, $data[$field] );
+            		update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
 
             	} else {
 
@@ -205,9 +211,11 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
 function yoast_addon_primary_category( $post_id ) {
 
-	$product_update = get_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', true );
+	$product_update = get_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', true ); // Can we update product primary categories?
 
-	$post_update = get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true );
+	$post_update = get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true ); // Can we update post primary categories?
+
+	// Only proceed if we have permission to update one of them.
 
 	if ( $post_update == 1 or $product_update == 1 ) {
 	
@@ -219,9 +227,9 @@ function yoast_addon_primary_category( $post_id ) {
 
 			if ( !empty( $cat_slug ) and !empty( $post_type ) ) {
 
-				if ( $post_type == 'product' and $product_update == 1 ) {
+				if ( $post_type == 'product' and $product_update == 1 ) { // Products use 'product_cat' instead of 'categories'.
 
-		    		$cat = get_term_by( 'slug', $cat_slug, 'product_cat' );
+		    		$cat = get_term_by( 'slug', $cat_slug, 'product_cat' ); 
 
 		  			$cat_id = $cat->term_id;
 
@@ -250,4 +258,7 @@ function yoast_addon_primary_category( $post_id ) {
 			}
 		}
 	}
+	delete_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update' );
+	delete_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update' );
+	delete_post_meta( $post_id, '_yoast_wpseo_addon_category_slug' );
 }
