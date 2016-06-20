@@ -154,50 +154,53 @@ function yoast_seo_addon_import( $post_id, $data, $import_options ) {
     
     // update everything in fields arrays
     foreach ( $fields as $field ) {
+    	if ( $field == '_yoast_wpseo_primary_category_addon' ) {
 
-        if ( $yoast_addon->can_update_meta( $field, $import_options ) ) {
+           			$title = $data[$field];
 
-            if ( in_array( $field, $image_fields ) ) {
+           			$cat_slug = sanitize_title( $title ); // Get the slug for the Primary Category so we can match it later
 
-                if ( $yoast_addon->can_update_image( $import_options ) ) {
+           			update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
 
-                    $id = $data[$field]['attachment_id'];
+           			// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
+
+           			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
+
+           			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
+
+        } else {
+
+        	if ( $yoast_addon->can_update_meta( $field, $import_options ) ) {
+
+           		if ( in_array( $field, $image_fields ) ) {
+
+               		if ( $yoast_addon->can_update_image( $import_options ) ) {
+
+                   		$id = $data[$field]['attachment_id'];
                     
-                    $url = wp_get_attachment_url( $id );
+                   		$url = wp_get_attachment_url( $id );
 
-                    update_post_meta( $post_id, $field, $url );
+                   		update_post_meta( $post_id, $field, $url );
 
-                }
+                   	}
 
-            } else {
+                } else {
 
-            	if ( $field == '_yoast_wpseo_primary_category_addon' ) {
+	    	       	if ( $field == '_yoast_wpseo_focuskw' ) {
 
-            		$title = $data[$field];
+    		       		update_post_meta( $post_id, $field, $data[$field] );
+	            		update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
 
-            		$cat_slug = sanitize_title( $title ); // Get the slug for the Primary Category so we can match it later
+            		} else {
 
-            		update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
+	               		update_post_meta( $post_id, $field, $data[$field] );
 
-            		// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
-
-            		update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
-
-            		update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
-
-            	} else if ( $field == '_yoast_wpseo_focuskw' ) {
-
-            		update_post_meta( $post_id, $field, $data[$field] );
-            		update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
-
-            	} else {
-
-                	update_post_meta( $post_id, $field, $data[$field] );
-
-                }
-            }
-        }
+                	}
+            	}
+        	}
+    	}
     }
+    
     		// calculate _yoast_wpseo_linkdex
     if ( class_exists( 'WPSEO_Metabox' ) ) {
     	

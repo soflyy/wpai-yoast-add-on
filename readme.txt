@@ -67,7 +67,7 @@ The Yoast WordPress SEO Add-On will appear in the Step 3 of WP All Import.
 == Changelog ==
 
 = 1.1.2 =
-* Added focus keyword text input
+* Added focus keyword text input field
 
 = 1.1.1 =
 * Added primary category setting
