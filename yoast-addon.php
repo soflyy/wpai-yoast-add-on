@@ -4,13 +4,15 @@
 Plugin Name: WP All Import - Yoast WordPress SEO Add-On
 Plugin URI: http://www.wpallimport.com/
 Description: Import data into Yoast WordPress SEO with WP All Import.
-Version: 1.1.0
+Version: 1.1.2
 Author: Soflyy
 */
 
 include "rapid-addon.php";
 
 include_once(ABSPATH.'wp-admin/includes/plugin.php');
+
+add_action( 'pmxi_saved_post', 'yoast_addon_primary_category', 10, 1 );
 
 $yoast_addon = new RapidAddon( 'Yoast WordPress SEO Add-On', 'yoast_addon' );
 
@@ -92,7 +94,8 @@ $yoast_addon->add_options(
 			'The priority given to this page in the XML sitemap. '
 			),
 		$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
-		$yoast_addon->add_field( '_yoast_wpseo_redirect', '301 Redirect', 'text', null, 'The URL that this page should redirect to.' )
+		$yoast_addon->add_field( '_yoast_wpseo_redirect', '301 Redirect', 'text', null, 'The URL that this page should redirect to.' ),
+		$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 
 	)
 );
@@ -118,7 +121,7 @@ if (function_exists('is_plugin_active')) {
 	}
 }
 
-function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
+function yoast_seo_addon_import( $post_id, $data, $import_options ) {
 
 	global $yoast_addon;
 
@@ -137,8 +140,8 @@ function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
     	'_yoast_wpseo_opengraph-title',
     	'_yoast_wpseo_opengraph-description',
     	'_yoast_wpseo_twitter-title',
-    	'_yoast_wpseo_twitter-description'
-
+    	'_yoast_wpseo_twitter-description',
+    	'_yoast_wpseo_primary_category_addon'
     );
     
     // image fields
@@ -151,30 +154,54 @@ function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
     
     // update everything in fields arrays
     foreach ( $fields as $field ) {
+    	if ( $field == '_yoast_wpseo_primary_category_addon' ) {
 
-        if ( empty($article['ID']) or $yoast_addon->can_update_meta( $field, $import_options ) ) {
+           			$title = $data[$field];
 
-            if ( in_array( $field, $image_fields ) ) {
+           			$cat_slug = sanitize_title( $title ); // Get the slug for the Primary Category so we can match it later
 
-                if ( $yoast_addon->can_update_image( $import_options ) ) {
+           			update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
 
-                    $id = $data[$field]['attachment_id'];
+           			// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
+
+           			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
+
+           			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
+
+        } else {
+
+        	if ( $yoast_addon->can_update_meta( $field, $import_options ) ) {
+
+           		if ( in_array( $field, $image_fields ) ) {
+
+               		if ( $yoast_addon->can_update_image( $import_options ) ) {
+
+                   		$id = $data[$field]['attachment_id'];
                     
-                    $url = wp_get_attachment_url( $id );
+                   		$url = wp_get_attachment_url( $id );
 
-                    update_post_meta( $post_id, $field, $url );
+                   		update_post_meta( $post_id, $field, $url );
 
-                }
+                   	}
 
-            } else {
+                } else {
 
-                update_post_meta( $post_id, $field, $data[$field] );
+	    	       	if ( $field == '_yoast_wpseo_focuskw' ) {
 
-            }
-        }
+    		       		update_post_meta( $post_id, $field, $data[$field] );
+	            		update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
+
+            		} else {
+
+	               		update_post_meta( $post_id, $field, $data[$field] );
+
+                	}
+            	}
+        	}
+    	}
     }
-		
-		// calculate _yoast_wpseo_linkdex
+    
+    		// calculate _yoast_wpseo_linkdex
     if ( class_exists( 'WPSEO_Metabox' ) ) {
     	
 			wpseo_admin_init();
@@ -183,4 +210,58 @@ function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
     	
 			$seo->calculate_results( get_post($post_id) );
     }
+}
+
+function yoast_addon_primary_category( $post_id ) {
+
+	$product_update = get_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', true ); // Can we update product primary categories?
+
+	$post_update = get_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', true ); // Can we update post primary categories?
+
+	// Only proceed if we have permission to update one of them.
+
+	if ( $post_update == 1 or $product_update == 1 ) {
+	
+		$cat_slug = get_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', true );
+
+		if ( !empty( $cat_slug ) ) {
+
+			$post_type = get_post_type( $post_id );
+
+			if ( !empty( $cat_slug ) and !empty( $post_type ) ) {
+
+				if ( $post_type == 'product' and $product_update == 1 ) { // Products use 'product_cat' instead of 'categories'.
+
+		    		$cat = get_term_by( 'slug', $cat_slug, 'product_cat' ); 
+
+		  			$cat_id = $cat->term_id;
+
+		  			if ( !empty( $cat_id ) ) {
+
+		  				update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat', $cat_id );
+
+
+	  				}
+
+				} else {
+
+					if ( $post_update == 1 ) {
+
+						$cat = get_term_by( 'slug', $cat_slug, 'category' );
+					
+						$cat_id = $cat->term_id;
+
+						if ( !empty( $cat_id ) ) {
+
+							update_post_meta( $post_id, '_yoast_wpseo_primary_category', $cat_id );
+
+						}
+					}
+				}
+			}
+		}
+	}
+	delete_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update' );
+	delete_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update' );
+	delete_post_meta( $post_id, '_yoast_wpseo_addon_category_slug' );
 }
