@@ -4,7 +4,7 @@
 Plugin Name: WP All Import - Yoast WordPress SEO Add-On
 Plugin URI: http://www.wpallimport.com/
 Description: Import data into Yoast WordPress SEO with WP All Import.
-Version: 1.1.3
+Version: 1.1.4
 Author: Soflyy
 */
 
@@ -164,9 +164,25 @@ function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
 
            			// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
 
-           			update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) );
+           			if ( empty( $article['ID'] ) or $yoast_addon->can_update_meta( '_yoast_wpseo_primary_category', $import_options ) ) {
 
-           			update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) );
+           				update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 1 );
+           			
+           			} else {
+
+           				update_post_meta( $post_id, '_yoast_wpseo_primary_category_can_update', 0 );
+
+           			}
+
+           			if ( empty( $article['ID'] ) or $yoast_addon->can_update_meta( '_yoast_wpseo_primary_product_cat', $import_options ) ) {
+
+           				update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 1 );
+
+           			} else {
+
+           				update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update', 0 );
+
+           			}
 
         } else {
 

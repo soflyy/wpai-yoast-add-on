@@ -19,6 +19,8 @@ if (!class_exists('RapidAddon')) {
 			'download_images' => 'yes', 
 			'download_featured_delim' => ',', 
 			'download_featured_image' => '',
+			'gallery_featured_image' => '',
+			'gallery_featured_delim' => ',',
 			'featured_image' => '',
 			'featured_delim' => ',', 
 			'search_existing_images' => 1,
@@ -35,6 +37,7 @@ if (!class_exists('RapidAddon')) {
 			'image_meta_alt' => '',
 			'set_image_meta_description' => 0,
 			'image_meta_description_delim' => ',',
+			'image_meta_description_delim_logic' => 'separate',
 			'image_meta_description' => '',
 			'auto_rename_images' => 0,
 			'auto_rename_images_suffix' => '',
@@ -146,9 +149,9 @@ if (!class_exists('RapidAddon')) {
 		}
 
 
-		function add_field($field_slug, $field_name, $field_type, $enum_values = null, $tooltip = "") {
+		function add_field($field_slug, $field_name, $field_type, $enum_values = null, $tooltip = "", $is_html = true) {
 
-			$field =  array("name" => $field_name, "type" => $field_type, "enum_values" => $enum_values, "tooltip" => $tooltip, "is_sub_field" => false, "is_main_field" => false, "slug" => $field_slug);
+			$field =  array("name" => $field_name, "type" => $field_type, "enum_values" => $enum_values, "tooltip" => $tooltip, "is_sub_field" => false, "is_main_field" => false, "slug" => $field_slug, "is_html" => $is_html);
 
 			$this->fields[$field_slug] = $field;
 
@@ -402,6 +405,8 @@ if (!class_exists('RapidAddon')) {
 		}		
 
 		function render_field($field_params, $field_slug, $current_values, $in_the_bottom = false){
+			
+			if (!isset($current_values[$this->slug][$field_slug])) { $current_values[$this->slug][$field_slug] = ''; }
 
 			if ($field_params['type'] == 'text') {
 
@@ -428,6 +433,8 @@ if (!class_exists('RapidAddon')) {
 				);
 
 			} else if ($field_params['type'] == 'image' or $field_params['type'] == 'file') {
+				
+				if (!isset($current_values[$this->slug]['download_image'][$field_slug])) { $current_values[$this->slug]['download_image'][$field_slug] = ''; }
 
 				PMXI_API::add_field(
 					$field_params['type'],
@@ -444,6 +451,9 @@ if (!class_exists('RapidAddon')) {
 				);
 
 			} else if ($field_params['type'] == 'radio') {					
+				
+				if (!isset($current_values[$this->slug]['mapping'][$field_slug])) { $current_values[$this->slug]['mapping'][$field_slug] = array(); }
+				if (!isset($current_values[$this->slug]['xpaths'][$field_slug])) { $current_values[$this->slug]['xpaths'][$field_slug] = ''; }
 
 				PMXI_API::add_field(
 					'enum',
@@ -483,11 +493,13 @@ if (!class_exists('RapidAddon')) {
 				<?php
 
 			} else if($field_params['type'] == 'plain_text'){
-
-				?>
-				<p style="margin: 0 0 12px 0;"><?php echo $field_params['name'];?></p>
-				<?php
-
+				if ($field_params['is_html']):
+					echo $field_params['name'];				
+				else:
+					?>
+					<p style="margin: 0 0 12px 0;"><?php echo $field_params['name'];?></p>
+					<?php
+				endif;
 			}
 
 
@@ -649,11 +661,11 @@ if (!class_exists('RapidAddon')) {
 
 		}		
 
-		function add_text($text = ''){
+		function add_text($text = '', $is_html = false){
 
 			if (empty($text)) return;
 
-			return $this->add_field(sanitize_key($text) . time(), $text, 'plain_text');			
+			return $this->add_field(sanitize_key($text) . time(), $text, 'plain_text', null, "", $is_html);			
 
 		}			
 
