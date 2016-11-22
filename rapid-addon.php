@@ -42,7 +42,8 @@ if (!class_exists('RapidAddon')) {
 			'auto_rename_images' => 0,
 			'auto_rename_images_suffix' => '',
 			'auto_set_extension' => 0,
-			'new_extension' => ''
+			'new_extension' => '',
+			'do_not_remove_images' => 1,
 		);	
 
 		function __construct($name, $slug) {
@@ -105,10 +106,10 @@ if (!class_exists('RapidAddon')) {
 			}
 
 			if ($this->when_to_run == "always") {
-				return true;
+				$addon_active = true;
 			}
 
-			return $addon_active;
+			return apply_filters('rapid_is_active_add_on', $addon_active, $post_type, $this->slug);
 		}
 		
 		/**
@@ -493,7 +494,7 @@ if (!class_exists('RapidAddon')) {
 				<?php
 
 			} else if($field_params['type'] == 'plain_text'){
-				if ($field_params['is_html']):
+				if ($field_params['is_html']):					
 					echo $field_params['name'];				
 				else:
 					?>
@@ -665,7 +666,7 @@ if (!class_exists('RapidAddon')) {
 
 			if (empty($text)) return;
 
-			return $this->add_field(sanitize_key($text) . time(), $text, 'plain_text', null, "", $is_html);			
+			return $this->add_field(sanitize_key($text) . time() . uniqid() . count($this->fields), $text, 'plain_text', null, "", $is_html);			
 
 		}			
 
@@ -928,6 +929,26 @@ if (!class_exists('RapidAddon')) {
 			if ($import_options['update_custom_fields_logic'] == "full_update") return true;
 			if ($import_options['update_custom_fields_logic'] == "only" and ! empty($import_options['custom_fields_list']) and is_array($import_options['custom_fields_list']) and in_array($meta_key, $import_options['custom_fields_list']) ) return true;
 			if ($import_options['update_custom_fields_logic'] == "all_except" and ( empty($import_options['custom_fields_list']) or ! in_array($meta_key, $import_options['custom_fields_list']) )) return true;
+
+			return false;
+
+		}
+
+		function can_update_taxonomy($tax_name, $import_options) {
+
+			//echo "<pre>";
+			//print_r($import_options['options']);
+			//echo "</pre>";
+			
+			$import_options = $import_options['options'];
+
+			if ($import_options['update_all_data'] == 'yes') return true;
+
+			if ( ! $import_options['is_update_categories'] ) return false;			
+
+			if ($import_options['update_categories_logic'] == "full_update") return true;
+			if ($import_options['update_categories_logic'] == "only" and ! empty($import_options['taxonomies_list']) and is_array($import_options['taxonomies_list']) and in_array($tax_name, $import_options['taxonomies_list']) ) return true;
+			if ($import_options['update_categories_logic'] == "all_except" and ( empty($import_options['taxonomies_list']) or ! in_array($tax_name, $import_options['taxonomies_list']) )) return true;
 
 			return false;
 

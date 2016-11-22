@@ -281,3 +281,9 @@ function yoast_addon_primary_category( $post_id ) {
 	delete_post_meta( $post_id, '_yoast_wpseo_primary_product_cat_can_update' );
 	delete_post_meta( $post_id, '_yoast_wpseo_addon_category_slug' );
 }
+
+add_filter( 'rapid_is_active_add_on', 'yoast_addon_is_active_add_on', 10, 3 );
+function yoast_addon_is_active_add_on( $is_active, $post_type, $called_by ){
+    if ( $called_by == 'yoast_addon' && $post_type == 'taxonomies' ) $is_active = false;
+    return $is_active;
+}
