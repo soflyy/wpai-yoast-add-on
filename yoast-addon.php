@@ -164,10 +164,6 @@ switch($custom_type) {
 	
 		$yoast_addon->add_field( '_yoast_wpseo_focuskw', 'Focus Keyword', 'text', null, 'Pick the main keyword or keyphrase that this post/page is about.' );
 		
-		if( is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
-			$yoast_addon->add_field( '_yoast_wpseo_focuskeywords', 'Focus Keywords', 'text', null, 'Add up to 4 addition keywords/keyphrases (comma separated) that this post/page is about.' );
-		}
-
 		$yoast_addon->add_field( '_yoast_wpseo_title', 'SEO Title', 'text', null, 'The SEO title defaults to what is generated based on this sites title template for this posttype.' );
 
 		$yoast_addon->add_field( '_yoast_wpseo_metadesc', 'Meta Description', 'text', null, 'The meta description will be limited to 156 chars. It is often shown as the black text under the title in a search result. For this to work it has to contain the keyword that was searched for.' );
@@ -268,7 +264,8 @@ switch($custom_type) {
 				'_yoast_wpseo_opengraph-description',
 				'_yoast_wpseo_twitter-title',
 				'_yoast_wpseo_twitter-description',
-				'_yoast_wpseo_primary_category_addon'
+				'_yoast_wpseo_primary_category_addon',
+				'_yst_is_cornerstone'
 			);
 			
 			// image fields
@@ -334,6 +331,18 @@ switch($custom_type) {
 								update_post_meta( $post_id, $field, $data[$field] );
 								update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
 
+							} elseif ( $field == "_yst_is_cornerstone" && empty( $data[$field] ) ) {
+								
+								if ( empty($article['ID']) ) {
+									
+									// Do nothing
+									
+								} else {
+									
+									delete_post_meta( $post_id, "_yst_is_cornerstone");
+									
+								}
+								
 							} else {
 
 								update_post_meta( $post_id, $field, $data[$field] );
