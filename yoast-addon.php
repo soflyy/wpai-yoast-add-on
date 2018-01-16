@@ -256,8 +256,6 @@ switch($custom_type) {
 				'_yoast_wpseo_meta-robots-noindex',
 				'_yoast_wpseo_meta-robots-nofollow',
 				'_yoast_wpseo_meta-robots-adv',
-				'_yoast_wpseo_sitemap-include',
-				'_yoast_wpseo_sitemap-prio',
 				'_yoast_wpseo_canonical',
 				'_yoast_wpseo_redirect',
 				'_yoast_wpseo_opengraph-title',
