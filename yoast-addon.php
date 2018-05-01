@@ -193,7 +193,9 @@ switch($custom_type) {
 				$yoast_addon->add_field( '_yoast_wpseo_twitter-image', 'Image', 'image', null, "If you want to override the image used on Twitter for this post, import one here. The recommended image size for Twitter is 1024 x 512px."),
 			)
 		);
-
+		
+		if( is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) )
+		{
 		$yoast_addon->add_options(
 			null,
 			'Advanced SEO Options',
@@ -211,7 +213,7 @@ switch($custom_type) {
 						'' => 'Follow',
 						'1' => 'Nofollow'
 					) ),
-				$yoast_addon->add_field( '_yst_is_cornerstone', 'This article is cornerstone content', 'radio', 
+				$yoast_addon->add_field( '_yoast_wpseo_is_cornerstone', 'This article is cornerstone content', 'radio', 
 					array(
 						'' => 'No',
 						'1' => 'Yes'
@@ -230,6 +232,43 @@ switch($custom_type) {
 				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 			)
 		);
+		}
+		else
+		{
+			
+			$yoast_addon->add_options(
+			null,
+			'Advanced SEO Options',
+			array(
+				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-noindex', 'Meta Robots Index', 'radio', 
+					array(
+						'' => 'default',
+						'2' => 'index',
+						'1' => 'noindex',
+					),
+					"This setting can be overwritten by Yoast WordPress SEO's sitewide privacy settings"
+				),
+				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-nofollow', 'Meta Robots Nofollow', 'radio', 
+					array(
+						'' => 'Follow',
+						'1' => 'Nofollow'
+					) ),
+				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-adv', 'Meta Robots Advanced', 'radio', 
+					array(
+						'' => 'default',
+						'none' => 'None',
+						'noimageindex' => 'No Image Index',
+						'noarchive' => 'No Archive',
+						'nosnippet' => 'No Snippet'
+					),
+					'Advanced meta robots settings for this page.'
+				),
+				$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
+				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
+			)
+		);
+			
+		}
 		
 		$yoast_addon->set_import_function( 'yoast_seo_addon_import' );
 
@@ -274,7 +313,7 @@ switch($custom_type) {
 				'_yoast_wpseo_twitter-title',
 				'_yoast_wpseo_twitter-description',
 				'_yoast_wpseo_primary_category_addon',
-				'_yst_is_cornerstone'
+				'_yoast_wpseo_is_cornerstone'
 			);
 			
 			// image fields
@@ -352,11 +391,15 @@ switch($custom_type) {
 									foreach( $yoast_keywords as $keyword)
 									{
 										
-										$focus_keyword_array[] = array("keyword" => $keyword, "score" => "na");
+										$focus_keyword_array[] = array("keyword" => $keyword);
 										
 									}
 									// set post meta value for 'secondary' focus keywords
-									update_post_meta($post_id, "_yoast_wpseo_focuskeywords", json_encode($focus_keyword_array));
+									// Use Yoast's meta update function
+									if( class_exists('WPSEO_Meta') )
+									 {
+										 WPSEO_Meta::set_value('focuskeywords', json_encode($focus_keyword_array), $post_id);
+									 }
 								}
 								else {
 									
@@ -367,16 +410,22 @@ switch($custom_type) {
 									update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $yoast_keywords );
 								}
 							
-							} elseif ( $field == "_yst_is_cornerstone" && empty( $data[$field] ) ) {
+							} elseif ( $field == "_yoast_wpseo_is_cornerstone"  ) {
 								
-								if ( empty($article['ID']) ) {
+								if ( empty($article['ID']) && empty( $data[$field] )) {
 									
 									// Do nothing
 									
+								} elseif( empty( $data[$field] )) {
+									
+									delete_post_meta( $post_id, "_yoast_wpseo_is_cornerstone");
+									
 								} else {
-									
-									delete_post_meta( $post_id, "_yst_is_cornerstone");
-									
+									// use Yoast's helper function to import cornerstone value
+									 if( class_exists('WPSEO_Meta') )
+									 {
+										 WPSEO_Meta::set_value('is_cornerstone', $data[$field], $post_id);
+									 }
 								}
 								
 							} else {

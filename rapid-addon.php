@@ -681,8 +681,8 @@ if (!class_exists('RapidAddon')) {
 							'enum_values' => $this->fields[$sub_field['slug']]['enum_values'],
 							'mapping' => true,
 							'field_key' => $sub_field['slug'],
-							'mapping_rules' => $current_values[$this->slug]['mapping'][$sub_field['slug']],
-							'xpath' => $current_values[$this->slug]['xpaths'][$sub_field['slug']],
+							'mapping_rules' => isset($current_values[$this->slug]['mapping'][$sub_field['slug']]) ? $current_values[$this->slug]['mapping'][$sub_field['slug']] : array(),
+							'xpath' => isset($current_values[$this->slug]['xpaths'][$sub_field['slug']]) ? $current_values[$this->slug]['xpaths'][$sub_field['slug']] : '',
 							'addon_prefix' => $this->slug,
 							'sub_fields' => $this->get_sub_fields($this->fields[$sub_field['slug']], $sub_field['slug'], $current_values),
 							'is_main_field' => $sub_field['is_main_field']
@@ -968,7 +968,7 @@ if (!class_exists('RapidAddon')) {
 							if ($import->options[$this->slug]['xpaths'][$option_name] == ""){
 								$count and $this->data[$option_name] = array_fill(0, $count, "");
 							} else {
-								$data[$option_name] = XmlImportParser::factory($xml, $cxpath, (string) $import->options[$this->slug]['xpaths'][$option_name], $file)->parse($records);
+								$data[$option_name] = XmlImportParser::factory($xml, $cxpath, (string) $import->options[$this->slug]['xpaths'][$option_name], $file)->parse();
 								$tmp_files[] = $file;						
 							}
 						} 
@@ -1147,4 +1147,3 @@ if (!class_exists('RapidAddon')) {
 	}	
 
 }
-
