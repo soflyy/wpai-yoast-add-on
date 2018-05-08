@@ -194,8 +194,6 @@ switch($custom_type) {
 			)
 		);
 		
-		if( is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) )
-		{
 		$yoast_addon->add_options(
 			null,
 			'Advanced SEO Options',
@@ -232,43 +230,7 @@ switch($custom_type) {
 				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 			)
 		);
-		}
-		else
-		{
-			
-			$yoast_addon->add_options(
-			null,
-			'Advanced SEO Options',
-			array(
-				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-noindex', 'Meta Robots Index', 'radio', 
-					array(
-						'' => 'default',
-						'2' => 'index',
-						'1' => 'noindex',
-					),
-					"This setting can be overwritten by Yoast WordPress SEO's sitewide privacy settings"
-				),
-				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-nofollow', 'Meta Robots Nofollow', 'radio', 
-					array(
-						'' => 'Follow',
-						'1' => 'Nofollow'
-					) ),
-				$yoast_addon->add_field( '_yoast_wpseo_meta-robots-adv', 'Meta Robots Advanced', 'radio', 
-					array(
-						'' => 'default',
-						'none' => 'None',
-						'noimageindex' => 'No Image Index',
-						'noarchive' => 'No Archive',
-						'nosnippet' => 'No Snippet'
-					),
-					'Advanced meta robots settings for this page.'
-				),
-				$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
-				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
-			)
-		);
-			
-		}
+		
 		
 		$yoast_addon->set_import_function( 'yoast_seo_addon_import' );
 
@@ -375,7 +337,7 @@ switch($custom_type) {
 						} else {
 
 							if ( $field == '_yoast_wpseo_focuskw' ) {
-
+								
 								// if premium Yoast plugin is installed, support multiple focus keywords
 								$yoast_keywords = explode("|", trim( $data[$field], "|" ));
 								
@@ -411,6 +373,19 @@ switch($custom_type) {
 								}
 							
 							} elseif ( $field == "_yoast_wpseo_is_cornerstone"  ) {
+								// get plugin data
+								$yoast_prem = get_plugin_data(plugin_dir_path( __DIR__ )."wordpress-seo-premium/wp-seo-premium.php", false, false);
+								$yoast_free = get_plugin_data(plugin_dir_path( __DIR__ )."wordpress-seo/wp-seo.php", false, false);
+								
+								// determine if legacy support ( version < 7.3 )
+								if( $is_premium )
+								{
+									$is_legacy = ( $yoast_prem["Version"] < 7.3)? true : false;
+								}
+								else
+								{
+									$is_legacy = ( $yoast_free["Version"] < 7.3)? true : false;
+								}
 								
 								if ( empty($article['ID']) && empty( $data[$field] )) {
 									
@@ -419,12 +394,19 @@ switch($custom_type) {
 								} elseif( empty( $data[$field] )) {
 									
 									delete_post_meta( $post_id, "_yoast_wpseo_is_cornerstone");
+									delete_post_meta( $post_id, "_yst_is_cornerstone");
 									
 								} else {
+									if ( !$is_legacy ){
 									// use Yoast's helper function to import cornerstone value
 									 if( class_exists('WPSEO_Meta') )
 									 {
 										 WPSEO_Meta::set_value('is_cornerstone', $data[$field], $post_id);
+									 }
+									}
+									 else{
+									 // set cornerstone value for older Yoast versions ( < 7.3 )
+									 update_post_meta( $post_id, "_yst_is_cornerstone", $data[$field]);
 									 }
 								}
 								
