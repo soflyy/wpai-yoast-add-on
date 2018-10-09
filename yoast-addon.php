@@ -1,9 +1,9 @@
 <?php
 
 /*
-Plugin Name: WP All Import - Yoast WordPress SEO Add-On
+Plugin Name: Data Captain - Yoast WordPress SEO Add-On
 Plugin URI: http://www.wpallimport.com/
-Description: Import data into Yoast WordPress SEO with WP All Import.
+Description: Import data into Yoast WordPress SEO with Data Captain Import.
 Version: 1.1.7
 Author: Soflyy
 */
@@ -78,7 +78,7 @@ switch($custom_type) {
 			if ( !is_plugin_active( "wordpress-seo/wp-seo.php" ) && !is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
 
 				$yoast_addon->admin_notice(
-					'The Yoast WordPress SEO Add-On requires WP All Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.',
+					'The Yoast WordPress SEO Add-On requires Data Captain Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.',
 					array(
 						'plugins' => array('wordpress-seo/wp-seo.php')
 					)
@@ -230,7 +230,7 @@ switch($custom_type) {
 			if ( !is_plugin_active( "wordpress-seo/wp-seo.php" ) && !is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
 
 				$yoast_addon->admin_notice(
-					'The Yoast WordPress SEO Add-On requires WP All Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.',
+					'The Yoast WordPress SEO Add-On requires Data Captain Import <a href="http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>, and the <a href="https://yoast.com/wordpress/plugins/seo/">Yoast WordPress SEO</a> plugin.',
 					array(
 						'plugins' => array('wordpress-seo/wp-seo.php')
 					)
