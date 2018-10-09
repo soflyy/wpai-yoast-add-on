@@ -23,7 +23,7 @@ The importer is so intuitive it is almost like manually configuring Yoast WordPr
 
 * Update SEO settings for existing posts, pages, or custom post types already published on your site.
 
-* Compatible with all other Data Captain Import add-ons.
+* Compatible with all other Data Captain Import Add-Ons.
 
 * Complete support - configure all available SEO settings for your posts, including social media images.
 
@@ -98,7 +98,7 @@ The Yoast WordPress SEO Add-On will appear in the Step 3 of Data Captain Import.
 * Add 'Auto Calculate SEO Score'
 
 = 1.0.2 =
-* Update Data Captain Import add-on API
+* Update Data Captain Import Add-On API
 
 = 1.0.0 =
 * Initial release on WP.org.
