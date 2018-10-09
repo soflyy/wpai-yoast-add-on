@@ -7,44 +7,44 @@ Requires at least: 4.1.0
 Tested up to: 4.9
 Stable tag: 1.1.7
 
-Easily import SEO settings from any XML or CSV file to Yoast WordPress SEO with the Yoast WordPress SEO Add-On for WP All Import.
+Easily import SEO settings from any XML or CSV file to Yoast WordPress SEO with the Yoast WordPress SEO Add-On for Data Captain Import.
 
 == Description ==
 
-The Yoast WordPress SEO Add-On for [WP All Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import") makes it easy to bulk import your SEO setting to the Yoast WordPress SEO plugin in less than 10 minutes.
+The Yoast WordPress SEO Add-On for [Data Captain Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import") makes it easy to bulk import your SEO setting to the Yoast WordPress SEO plugin in less than 10 minutes.
 
 The left side shows all of the fields that you can import to and the right side displays the data from your XML/CSV file. Then you can simply drag & drop the data from your XML or CSV into the Yoast WordPress SEO fields to import them.
 
 The importer is so intuitive it is almost like manually configuring Yoast WordPress SEO when adding/editing a post.
 
-= Why you should use the Yoast WordPress SEO Add-On for WP All Import =
+= Why you should use the Yoast WordPress SEO Add-On for Data Captain Import =
 
 * Import new posts, pages, or custom post types and configure their SEO settings all in the same import.
 
 * Update SEO settings for existing posts, pages, or custom post types already published on your site.
 
-* Compatible with all other WP All Import add-ons.
+* Compatible with all other Data Captain Import add-ons.
 
 * Complete support - configure all available SEO settings for your posts, including social media images.
 
-= WP All Import Professional Edition =
+= Data Captain Import Professional Edition =
 
-The Yoast WordPress SEO Add-On for WP All Import is fully compatible with [the free version of WP All Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import"). 
+The Yoast WordPress SEO Add-On for Data Captain Import is fully compatible with [the free version of Data Captain Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import"). 
 
-However, [the professional edition of WP All Import](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo) includes premium support and adds the following features:
+However, [the professional edition of Data Captain Import](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo) includes premium support and adds the following features:
 
 * Import files from a URL: Download and import files from external websites, even if they are password protected with HTTP authentication. 
 
-* Cron Job/Recurring Imports: WP All Import Pro can check periodically check a file for updates, and add, edit, delete, and update the your property listings.
+* Cron Job/Recurring Imports: Data Captain Import Pro can check periodically check a file for updates, and add, edit, delete, and update the your property listings.
 
-* Custom PHP Functions: Pass your data through custom functions by using [my_function({data[1]})] in your import template. WP All Import will pass the value of {data[1]} through my_function and use whatever it returns.
+* Custom PHP Functions: Pass your data through custom functions by using [my_function({data[1]})] in your import template. Data Captain Import will pass the value of {data[1]} through my_function and use whatever it returns.
 
 * Access to premium technical support.
 
-[Upgrade to the professional edition of WP All Import now.](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo)
+[Upgrade to the professional edition of Data Captain Import now.](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo)
 
 = Developers: Create Your Own Add-On =
-This Add-On was created using the [Rapid Add-On API](http://www.wpallimport.com/documentation/addon-dev/overview/) for WP All Import. We've made it really easy to write your own Add-On. 
+This Add-On was created using the [Rapid Add-On API](http://www.wpallimport.com/documentation/addon-dev/overview/) for Data Captain Import. We've made it really easy to write your own Add-On. 
 
 Don't have time? We'll write one for you.
 
@@ -52,7 +52,7 @@ Don't have time? We'll write one for you.
 
 == Installation ==
 
-First, install [WP All Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import").
+First, install [Data Captain Import](http://wordpress.org/plugins/wp-all-import "WordPress XML & CSV Import").
 
 Then install the Yoast WordPress SEO Add-On.
 
@@ -62,7 +62,7 @@ To install the Yoast WordPress SEO Add-On, either:
 
 * Unzip import-property-listings-into-realia.zip and upload the contents to /wp-content/plugins/, and then activate the plugin from the Plugins page in WordPress
 
-The Yoast WordPress SEO Add-On will appear in the Step 3 of WP All Import.
+The Yoast WordPress SEO Add-On will appear in the Step 3 of Data Captain Import.
 
 == Changelog ==
 
@@ -98,7 +98,7 @@ The Yoast WordPress SEO Add-On will appear in the Step 3 of WP All Import.
 * Add 'Auto Calculate SEO Score'
 
 = 1.0.2 =
-* Update WP All Import add-on API
+* Update Data Captain Import add-on API
 
 = 1.0.0 =
 * Initial release on WP.org.
@@ -111,4 +111,4 @@ We do try to handle support for our free version users at the following e-mail a
 
 E-mail: support@wpallimport.com
 
-Support for free version customers is not guaranteed and based on ability. For premium support, purchase [WP All Import Pro](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo).
+Support for free version customers is not guaranteed and based on ability. For premium support, purchase [Data Captain Import Pro](http://www.wpallimport.com/order-now/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=yoast-seo).
