@@ -2,7 +2,7 @@
 /**
  * RapidAddon
  *
- * @package     WP All Import RapidAddon
+ * @package     Data Captain Import RapidAddon
  * @copyright   Copyright (c) 2014, Soflyy
  * @license     http://opensource.org/licenses/gpl-2.0.php GNU Public License
  * @version 	1.1.0
@@ -223,7 +223,7 @@ if (!class_exists('RapidAddon')) {
 
 		/**
 		* 
-		* Add an option to WP All Import options list
+		* Add an option to Data Captain Import options list
 		*
 		* @param string $slug - option name
 		* @param string $default_value - default option value
@@ -902,7 +902,7 @@ if (!class_exists('RapidAddon')) {
 		}			
 			/**
 			*
-			* filter to allow import images for free edition of WP All Import
+			* filter to allow import images for free edition of Data Captain Import
 			*
 			*/
 			function is_allow_import_images($is_allow, $post_type){
@@ -1060,7 +1060,7 @@ if (!class_exists('RapidAddon')) {
 			if ($this->notice_text) {
 				$notice_text = $this->notice_text;
 			} else {
-				$notice_text = $this->name.' requires WP All Import <a href="http://www.wpallimport.com/" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>.';
+				$notice_text = $this->name.' requires Data Captain Import <a href="http://www.wpallimport.com/" target="_blank">Pro</a> or <a href="http://wordpress.org/plugins/wp-all-import" target="_blank">Free</a>.';
 			}
 
 			if (!get_option(sanitize_key($this->slug).'_notice_ignore')) {
