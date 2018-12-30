@@ -257,7 +257,6 @@ switch($custom_type) {
 				'_yoast_wpseo_meta-robots-nofollow',
 				'_yoast_wpseo_meta-robots-adv',
 				'_yoast_wpseo_canonical',
-				'_yoast_wpseo_redirect',
 				'_yoast_wpseo_opengraph-title',
 				'_yoast_wpseo_opengraph-description',
 				'_yoast_wpseo_twitter-title',
