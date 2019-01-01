@@ -219,7 +219,7 @@ switch($custom_type) {
 					'Advanced meta robots settings for this page.'
 				),
 				$yoast_addon->add_field( '_yoast_wpseo_canonical', 'Canonical URL', 'text', null, 'The canonical URL that this page should point to, leave empty to default to permalink. Cross domain canonical supported too.' ),
-				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
+				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category. If using a hierarchy, you must use arrow separators, e.g.: Parent Category > Child Category > Grandchild Category. The bottom level term will be the primary one.' )
 			)
 		);
 		
@@ -279,9 +279,7 @@ switch($custom_type) {
 
 							$title = $data[$field];
 
-							$cat_slug = sanitize_title( $title ); // Get the slug for the Primary Category so we can match it later
-
-							update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $cat_slug );
+							update_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', $title );
 
 							// Set post metas for regular categories and product categories so we know if we can update them after pmxi_saved_post hook fires.
 
@@ -365,6 +363,7 @@ function yoast_addon_primary_category( $post_id ) {
 	if ( $post_update == 1 or $product_update == 1 ) {
 	
 		$cat_slug = get_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', true );
+		update_option( 'treys_debug_a', $cat_slug );
 
 		if ( !empty( $cat_slug ) ) {
 
@@ -374,24 +373,21 @@ function yoast_addon_primary_category( $post_id ) {
 
 				if ( $post_type == 'product' and $product_update == 1 ) { // Products use 'product_cat' instead of 'categories'.
 
-		    		$cat = get_term_by( 'slug', $cat_slug, 'product_cat' ); 
+					$cat_id = wpaiya_find_category( $cat_slug, 'product_cat' );
 
-		  			$cat_id = $cat->term_id;
+					if ( !empty( $cat_id ) ) {
 
-		  			if ( !empty( $cat_id ) ) {
-
-		  				update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat', $cat_id );
+						update_post_meta( $post_id, '_yoast_wpseo_primary_product_cat', $cat_id );
 
 
-	  				}
+					}
 
 				} else {
 
 					if ( $post_update == 1 ) {
 
-						$cat = get_term_by( 'slug', $cat_slug, 'category' );
-					
-						$cat_id = $cat->term_id;
+						$cat_id = wpaiya_find_category( $cat_slug, 'category' );
+						update_option( 'treys_debug', $cat_id );
 
 						if ( !empty( $cat_id ) ) {
 
@@ -446,4 +442,139 @@ function yoast_seo_addon_get_post_type() {
 		$custom_type = empty($import_options_arr['custom_type']) ? '' : $import_options_arr['custom_type'];		
 	}
 	return $custom_type;
+}
+if ( ! function_exists( 'wpaiya_find_category' ) ) {
+	function wpaiya_find_category( $cats = '', $tax = '' ) {
+
+		if ( ! empty( $cats ) && ! empty( $tax ) ) {
+			// They typed in some categories.
+
+			$cats = explode( ">", $cats ); // Explode the categories to put them in an array.
+
+			if ( count ( $cats ) == 1 ) {
+				
+				// If there's only one category...            
+				$term = wpaiya_find_term( $cats[0], $tax ); // Find the single category...
+				update_option( 'treys_debug_b', $cats[0] );
+				
+				if ( ! empty( $term ) ) {
+
+					// Yay, we found it. Let's return the ID.            
+					return $term->term_id;
+					
+				} else {
+
+					// We didn't find a term, return nothing.
+					return null;
+
+				}
+				
+			}
+			
+			// If we got here, there's more than one category.
+			$t_cats = array_map( 'trim', $cats ); // Remove the white spaces around the category names.
+
+			for ( $i = 0; $i <= count( $t_cats ); $i++ ) {
+				
+				// Start looping through the categories...
+				if ( ! empty( $next_term ) ) {
+					
+					// We've already done this loop and found the next term that we need to look up.                
+					if ( $i == count( $t_cats ) ) { 
+
+						// We are at the end of the category list. Let's return what we found.                    
+						return $next_term->term_id;
+						
+					} else {
+
+						// We have not finished looping through the array. Set the next term to look up...
+						$c_term = wpaiya_find_term( $next_term->slug, $tax ); 
+						
+					}
+					
+				} else {
+
+					// $next_term is empty, so we've just started the loop.
+					$c_term = wpaiya_find_term( $t_cats[ $i ], $tax );
+					
+				}
+				
+				if ( ! empty( $c_term ) ) { 
+					
+					// We successfully retrieved the term object using $t_cats[ $i ]
+					$childs = get_term_children( $c_term->term_id, $tax ); // Get all children for the current name in the array.
+
+					if ( ! empty( $childs ) ) { 
+						
+						// we've found children. Now we need to loop and see if one matches the next item in the array.
+						foreach ( $childs as $child ) {
+
+							$c_c_term = get_term_by( 'id', $child, $tax ); // Get the child term object.
+
+							if ( ! empty( $c_c_term ) ) {
+								
+								// We successfully retrieved the child term object...
+								// Let's move up 1 spot in the array (i.e. the next child)
+								$x = $i + 1;
+
+								if ( array_key_exists( $x, $t_cats ) ) {
+
+									// We're going 1 spot deeper in the array.
+									if ( $t_cats[ $x ] == $c_c_term->name ) { 
+										// OK, we found a child under the current term that matches our hierarchy
+										// Now we'll set the next term that we need to check for children.
+										$next_term = $c_c_term;
+										
+									}
+
+								} // End array_key_exists check
+
+							} // End empty check for current child term.
+
+						} // End foreach loop for children.
+
+					} // End empty check for children.
+
+				} // End empty check for retrieving the current term in the array.
+
+			} // End for loop of the array.
+
+		} // End empty check of the $cats and $tax params.
+
+		return null; // They passed no cats and no taxonomy name.
+
+	}
+}
+
+if ( ! function_exists( 'wpaiya_find_term' ) ) {
+	// Used to find terms based on name or slug.
+	function wpaiya_find_term( $value = '', $tax = '' ) {
+
+		if ( ! empty( $value ) && ! empty( $tax ) ) {
+
+			// Look for the term by name first.
+			$term = get_term_by( 'name', $value, $tax );
+
+			if ( ! empty( $term ) ) {
+
+				// We found it by name. Returning now.
+				return $term;
+
+			}
+
+			// We did not find it by name, looking by slug now...
+			$term = get_term_by( 'slug', $value, $tax );
+
+			if ( ! empty( $term ) ) {
+
+				// We found the term by slug. Returning now...
+				return $term;
+
+			}
+
+		}
+
+		// We did not find anything. Return nothing.
+		return null;
+	}
 }
