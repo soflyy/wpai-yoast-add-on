@@ -363,7 +363,6 @@ function yoast_addon_primary_category( $post_id ) {
 	if ( $post_update == 1 or $product_update == 1 ) {
 	
 		$cat_slug = get_post_meta( $post_id, '_yoast_wpseo_addon_category_slug', true );
-		update_option( 'treys_debug_a', $cat_slug );
 
 		if ( !empty( $cat_slug ) ) {
 
@@ -387,7 +386,6 @@ function yoast_addon_primary_category( $post_id ) {
 					if ( $post_update == 1 ) {
 
 						$cat_id = wpaiya_find_category( $cat_slug, 'category' );
-						update_option( 'treys_debug', $cat_id );
 
 						if ( !empty( $cat_id ) ) {
 
@@ -455,7 +453,6 @@ if ( ! function_exists( 'wpaiya_find_category' ) ) {
 				
 				// If there's only one category...            
 				$term = wpaiya_find_term( $cats[0], $tax ); // Find the single category...
-				update_option( 'treys_debug_b', $cats[0] );
 				
 				if ( ! empty( $term ) ) {
 
