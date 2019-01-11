@@ -444,72 +444,65 @@ function yoast_seo_addon_get_post_type() {
 if ( ! function_exists( 'wpaiya_find_category' ) ) {
 	function wpaiya_find_category( $cats = '', $tax = '' ) {
 
+		// start at empty
+		$next_term = null;
+
 		if ( ! empty( $cats ) && ! empty( $tax ) ) {
 			// They typed in some categories.
 
 			$cats = explode( ">", $cats ); // Explode the categories to put them in an array.
 
 			if ( count ( $cats ) == 1 ) {
-				
+
 				// If there's only one category...            
 				$term = wpaiya_find_term( $cats[0], $tax ); // Find the single category...
-				
+
 				if ( ! empty( $term ) ) {
 
 					// Yay, we found it. Let's return the ID.            
 					return $term->term_id;
-					
+
 				} else {
 
 					// We didn't find a term, return nothing.
 					return null;
 
 				}
-				
+
 			}
-			
+
 			// If we got here, there's more than one category.
 			$t_cats = array_map( 'trim', $cats ); // Remove the white spaces around the category names.
 
 			for ( $i = 0; $i < count( $t_cats ); $i++ ) {
-				
+
 				// Start looping through the categories...
 				if ( ! empty( $next_term ) ) {
-					
-					// We've already done this loop and found the next term that we need to look up.                
-					if ( $i == count( $t_cats ) ) { 
 
-						// We are at the end of the category list. Let's return what we found.                    
-						return $next_term->term_id;
-						
-					} else {
+					// We have not finished looping through the array. Set the next term to look up...
+					$c_term = wpaiya_find_term( $next_term->slug, $tax ); 
 
-						// We have not finished looping through the array. Set the next term to look up...
-						$c_term = wpaiya_find_term( $next_term->slug, $tax ); 
-						
-					}
-					
 				} else {
 
 					// $next_term is empty, so we've just started the loop.
 					$c_term = wpaiya_find_term( $t_cats[ $i ], $tax );
-					
+
 				}
-				
+
 				if ( ! empty( $c_term ) ) { 
-					
+
 					// We successfully retrieved the term object using $t_cats[ $i ]
 					$childs = get_term_children( $c_term->term_id, $tax ); // Get all children for the current name in the array.
 
 					if ( ! empty( $childs ) ) { 
-						
+
 						// we've found children. Now we need to loop and see if one matches the next item in the array.
 						foreach ( $childs as $child ) {
 
 							$c_c_term = get_term_by( 'id', $child, $tax ); // Get the child term object.
 
 							if ( ! empty( $c_c_term ) ) {
-								
+
 								// We successfully retrieved the child term object...
 								// Let's move up 1 spot in the array (i.e. the next child)
 								$x = $i + 1;
@@ -538,7 +531,7 @@ if ( ! function_exists( 'wpaiya_find_category' ) ) {
 
 		} // End empty check of the $cats and $tax params.
 
-		return null; // They passed no cats and no taxonomy name.
+		return ( empty( $next_term ) ) ? null : $next_term->term_id;
 
 	}
 }
