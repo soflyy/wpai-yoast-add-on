@@ -471,7 +471,7 @@ if ( ! function_exists( 'wpaiya_find_category' ) ) {
 			// If we got here, there's more than one category.
 			$t_cats = array_map( 'trim', $cats ); // Remove the white spaces around the category names.
 
-			for ( $i = 0; $i <= count( $t_cats ); $i++ ) {
+			for ( $i = 0; $i < count( $t_cats ); $i++ ) {
 				
 				// Start looping through the categories...
 				if ( ! empty( $next_term ) ) {
