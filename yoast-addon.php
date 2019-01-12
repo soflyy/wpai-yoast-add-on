@@ -452,10 +452,12 @@ if ( ! function_exists( 'wpaiya_find_category' ) ) {
 
 			$cats = explode( ">", $cats ); // Explode the categories to put them in an array.
 
+			$cats = array_filter( $cats );
+
 			if ( count ( $cats ) == 1 ) {
 
 				// If there's only one category...            
-				$term = wpaiya_find_term( $cats[0], $tax ); // Find the single category...
+				$term = wpaiya_find_term( $cats[0], $tax, 'top_level' ); // Find the single category...
 
 				if ( ! empty( $term ) ) {
 
@@ -538,9 +540,43 @@ if ( ! function_exists( 'wpaiya_find_category' ) ) {
 
 if ( ! function_exists( 'wpaiya_find_term' ) ) {
 	// Used to find terms based on name or slug.
-	function wpaiya_find_term( $value = '', $tax = '' ) {
+	function wpaiya_find_term( $value = '', $tax = '', $level = '' ) {
 
 		if ( ! empty( $value ) && ! empty( $tax ) ) {
+
+			if ( $level == 'top_level' ) {
+
+				$terms = get_terms( array( 'name' => $value, 'taxonomy' => $tax ) );
+
+				if ( ! empty( $terms ) ) {
+
+					foreach ( $terms as $term ) {
+
+						if ( $term->parent == 0 ) {
+
+							return $term;
+
+						}
+
+					}
+				}
+
+				$terms = get_terms( array( 'slug' => $value, 'taxonomy' => $tax ) );
+
+				if ( ! empty( $terms ) ) {
+
+					foreach ( $terms as $term ) {
+
+						if ( $term->parent == 0 ) {
+
+							return $term;
+
+						}
+
+					}
+				}
+
+			}
 
 			// Look for the term by name first.
 			$term = get_term_by( 'name', $value, $tax );
