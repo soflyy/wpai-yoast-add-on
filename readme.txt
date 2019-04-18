@@ -67,8 +67,8 @@ The Yoast WordPress SEO Add-On will appear in the Step 3 of WP All Import.
 == Changelog ==
 
 = 1.1.8 =
-* Updated Rapid Add-On API
-* Removed _yoast_wpseo_redirect field.
+* bug fix: deprecated field _yoast_wpseo_redirect in import field list
+* improvement: update rapid add-on api
 
 = 1.1.7 =
 * Remove deprecated fields to fix issue with WooCommerce API.
