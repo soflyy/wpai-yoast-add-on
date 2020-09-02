@@ -16,6 +16,7 @@ add_action( 'pmxi_saved_post', 'yoast_addon_primary_category', 10, 1 );
 
 $yoast_addon = new RapidAddon( 'Yoast WordPress SEO Add-On', 'yoast_addon' );
 
+
 $custom_type = yoast_seo_addon_get_post_type();
 
 switch($custom_type) {
@@ -86,7 +87,7 @@ switch($custom_type) {
 			}
 
 			if ( is_plugin_active( "wordpress-seo/wp-seo.php" ) || is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ) ) {
-				
+					
 				$yoast_addon->run();
 				
 			}
@@ -95,6 +96,7 @@ switch($custom_type) {
 		function yoast_seo_addon_import( $term_id, $data, $import_options, $article ) {
 
 			global $yoast_addon;
+			
 			
 			// all fields except for slider and image fields
 			$fields = array(
@@ -162,7 +164,13 @@ switch($custom_type) {
 	// When most anything else is being imported...
 	default:
 	
-		$yoast_addon->add_field( '_yoast_wpseo_focuskw', 'Focus Keyword', 'text', null, 'Pick the main keyword or keyphrase that this post/page is about.' );
+		// adjust tool tip if premium version
+		if(is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" ))
+			$focus_kw_tip = 'Pick the main keyword or keyphrase that this post/page is about. Additional keywords should be separated by pipes ( kw1|kw2|kw3 )';
+		else
+			$focus_kw_tip = 'Pick the main keyword or keyphrase that this post/page is about.';
+		
+		$yoast_addon->add_field( '_yoast_wpseo_focuskw', 'Focus Keyword', 'text', null, $focus_kw_tip );
 		
 		$yoast_addon->add_field( '_yoast_wpseo_title', 'SEO Title', 'text', null, 'The SEO title defaults to what is generated based on this sites title template for this posttype.' );
 
@@ -185,7 +193,7 @@ switch($custom_type) {
 				$yoast_addon->add_field( '_yoast_wpseo_twitter-image', 'Image', 'image', null, "If you want to override the image used on Twitter for this post, import one here. The recommended image size for Twitter is 1024 x 512px."),
 			)
 		);
-
+		
 		$yoast_addon->add_options(
 			null,
 			'Advanced SEO Options',
@@ -203,7 +211,7 @@ switch($custom_type) {
 						'' => 'Follow',
 						'1' => 'Nofollow'
 					) ),
-				$yoast_addon->add_field( '_yst_is_cornerstone', 'This article is cornerstone content', 'radio', 
+				$yoast_addon->add_field( '_yoast_wpseo_is_cornerstone', 'This article is cornerstone content', 'radio', 
 					array(
 						'' => 'No',
 						'1' => 'Yes'
@@ -222,6 +230,7 @@ switch($custom_type) {
 				$yoast_addon->add_field( '_yoast_wpseo_primary_category_addon', 'Primary Category', 'text', null, 'The name or slug of the primary category' )
 			)
 		);
+		
 		
 		$yoast_addon->set_import_function( 'yoast_seo_addon_import' );
 
@@ -247,6 +256,9 @@ switch($custom_type) {
 		function yoast_seo_addon_import( $post_id, $data, $import_options, $article ) {
 
 			global $yoast_addon;
+			
+			// determine if using Yoast Premium
+			$is_premium = is_plugin_active( "wordpress-seo-premium/wp-seo-premium.php" );
 
 			// all fields except for slider and image fields
 			$fields = array(
@@ -262,7 +274,7 @@ switch($custom_type) {
 				'_yoast_wpseo_twitter-title',
 				'_yoast_wpseo_twitter-description',
 				'_yoast_wpseo_primary_category_addon',
-				'_yst_is_cornerstone'
+				'_yoast_wpseo_is_cornerstone'
 			);
 			
 			// image fields
@@ -324,20 +336,77 @@ switch($custom_type) {
 						} else {
 
 							if ( $field == '_yoast_wpseo_focuskw' ) {
-
-								update_post_meta( $post_id, $field, $data[$field] );
-								update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $data[$field] );
-
-							} elseif ( $field == "_yst_is_cornerstone" && empty( $data[$field] ) ) {
 								
-								if ( empty($article['ID']) ) {
+								// if premium Yoast plugin is installed, support multiple focus keywords
+								$yoast_keywords = explode("|", trim( $data[$field], "|" ));
+								
+								if( $is_premium && is_array( $yoast_keywords ) && count( $yoast_keywords ) > 1)
+								{
+									// set the 'primary' focus keyword and remove it from the array
+									$primary_keyword = array_shift($yoast_keywords);
+									update_post_meta( $post_id, $field, $primary_keyword );
+									update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $primary_keyword );
+									
+									$focus_keyword_array = array();
+																		
+									foreach( $yoast_keywords as $keyword)
+									{
+										
+										$focus_keyword_array[] = array("keyword" => $keyword);
+										
+									}
+									// set post meta value for 'secondary' focus keywords
+									// Use Yoast's meta update function
+									if( class_exists('WPSEO_Meta') )
+									 {
+										 WPSEO_Meta::set_value('focuskeywords', json_encode($focus_keyword_array), $post_id);
+									 }
+								}
+								else {
+									
+									// if using non-Premium Yoast, ensure that only one value is set for keyword
+									$yoast_keywords = is_array($yoast_keywords) ? $yoast_keywords[0] : $yoast_keywords;
+									
+									update_post_meta( $post_id, $field, $yoast_keywords );
+									update_post_meta( $post_id, '_yoast_wpseo_focuskw_text_input', $yoast_keywords );
+								}
+							
+							} elseif ( $field == "_yoast_wpseo_is_cornerstone"  ) {
+								// get plugin data
+								$yoast_prem = get_plugin_data(plugin_dir_path( __DIR__ )."wordpress-seo-premium/wp-seo-premium.php", false, false);
+								$yoast_free = get_plugin_data(plugin_dir_path( __DIR__ )."wordpress-seo/wp-seo.php", false, false);
+								
+								// determine if legacy support ( version < 7.3 )
+								if( $is_premium )
+								{
+									$is_legacy = ( $yoast_prem["Version"] < 7.3)? true : false;
+								}
+								else
+								{
+									$is_legacy = ( $yoast_free["Version"] < 7.3)? true : false;
+								}
+								
+								if ( empty($article['ID']) && empty( $data[$field] )) {
 									
 									// Do nothing
 									
-								} else {
+								} elseif( empty( $data[$field] )) {
 									
+									delete_post_meta( $post_id, "_yoast_wpseo_is_cornerstone");
 									delete_post_meta( $post_id, "_yst_is_cornerstone");
 									
+								} else {
+									if ( !$is_legacy ){
+									// use Yoast's helper function to import cornerstone value
+									 if( class_exists('WPSEO_Meta') )
+									 {
+										 WPSEO_Meta::set_value('is_cornerstone', $data[$field], $post_id);
+									 }
+									}
+									 else{
+									 // set cornerstone value for older Yoast versions ( < 7.3 )
+									 update_post_meta( $post_id, "_yst_is_cornerstone", $data[$field]);
+									 }
 								}
 								
 							} else {
