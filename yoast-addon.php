@@ -8,7 +8,12 @@ Version: 1.1.8
 Author: Soflyy
 */
 
-include "rapid-addon.php";
+/**
+ * Load up Composer dependencies.
+ */
+if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
+	require __DIR__ . '/vendor/autoload.php';
+}
 
 include_once(ABSPATH.'wp-admin/includes/plugin.php');
 

@@ -1,0 +1,34 @@
+{
+    "packages": [
+        {
+            "name": "soflyy/wp-all-import-rapid-addon",
+            "version": "dev-master",
+            "version_normalized": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/soflyy/wp-all-import-rapid-addon.git",
+                "reference": "f1aa9484e6284f266d78850aa2d95312299a1434"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/soflyy/wp-all-import-rapid-addon/zipball/f1aa9484e6284f266d78850aa2d95312299a1434",
+                "reference": "f1aa9484e6284f266d78850aa2d95312299a1434",
+                "shasum": ""
+            },
+            "time": "2020-09-19T10:45:20+00:00",
+            "default-branch": true,
+            "type": "library",
+            "installation-source": "source",
+            "license": [
+                "GPL 2.0"
+            ],
+            "description": "Rapid Add-On API for WP All Import",
+            "support": {
+                "source": "https://github.com/soflyy/wp-all-import-rapid-addon/tree/master",
+                "issues": "https://github.com/soflyy/wp-all-import-rapid-addon/issues"
+            },
+            "install-path": "../soflyy/wp-all-import-rapid-addon"
+        }
+    ],
+    "dev": true
+}

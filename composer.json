@@ -9,5 +9,18 @@
             "email": "support@wpallimport.com"
         }
     ],
-    "require": {}
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "git@github.com:soflyy/wp-all-import-rapid-addon.git"
+        }
+    ],
+    "require": {
+        "soflyy/wp-all-import-rapid-addon": "dev-master"
+    },
+    "autoload": {
+		"files": [
+            "vendor/soflyy/wp-all-import-rapid-addon/rapid-addon.php"
+        ]
+    }
 }
