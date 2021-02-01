@@ -1,0 +1,13 @@
+{
+    "name": "soflyy/wpai-yoast-add-on",
+    "description": "Easily import SEO settings from any XML or CSV file to Yoast WordPress SEO with the Yoast WordPress SEO Add-On for WP All Import.",
+    "type": "wordpress-plugin",
+    "license": "GPLv2 or later",
+    "authors": [
+        {
+            "name": "soflyy",
+            "email": "support@wpallimport.com"
+        }
+    ],
+    "require": {}
+}
